@@ -42,7 +42,7 @@ def save_txt(text):
     print("Chuỗi đã được lưu vào file thành công.")
 
 if __name__ == '__main__':
-    path = 'D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\uploads\\test01.jpg'
+    path = 'D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\uploads\\test08.jpg'
     preProcess(path=path)
 
     # Đường dẫn đến thư mục chứa hình ảnh
@@ -59,6 +59,6 @@ if __name__ == '__main__':
     for image_path in glob.glob(search_pattern):
         image = cv2.imread(image_path)
         text = text + extractText(image) + '\n'
-        
+
     save_txt(text)
 

@@ -50,3 +50,5 @@ class DocumentLayoutSegmentation:
         for c in filtered_cnts:
             x,y,w,h = cv2.boundingRect(c)
             cv2.rectangle(image, (x, y), (x + w, y + h), (36,255,12), 2)
+
+        cv2.imwrite(dir + f"segmentation.png", image)

@@ -41,19 +41,46 @@ class imagePreprocessing:
         # Repeated Closing operation to remove text from the document.
         kernel = np.ones((5, 5), np.uint8)
         img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel, iterations=3)
+        cv2.imshow('morphology', img)
+        cv2.waitKey(0)
 
-        output = remove(img)
+        # output = remove(img)
+        # cv2.imshow('remove_background', output)
+        # cv2.waitKey(0)
 
-        gray_image = cv2.cvtColor(output, cv2.COLOR_RGB2GRAY)
-        segmented_image = cv2.adaptiveThreshold(gray_image,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,11,2)
+        gray_image = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+        thresh = cv2.adaptiveThreshold(gray_image,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,17,2)
+        cv2.imshow('thresh', thresh)
+        cv2.waitKey(0)
 
-        canny = cv2.Canny(segmented_image, 0, 200)
-        canny = cv2.dilate(canny, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (21, 21)))
-
+        canny = cv2.Canny(thresh, 0, 200)
+        canny = cv2.dilate(canny, cv2.getStructuringElement(cv2.MORPH_RECT, (7, 7)))
+        cv2.imshow('canny', canny)
+        cv2.waitKey(0)
         # Finding contours for the detected edges.
         contours, hierarchy = cv2.findContours(canny, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
         # Keeping only the largest detected contour.
         page = sorted(contours, key=cv2.contourArea, reverse=True)[:5]
+
+        cnt = sorted(contours, key=cv2.contourArea, reverse=True)
+
+        # Chọn contour lớn nhất
+        # largest_contour = cnt[0]
+
+        # # Vẽ contour lớn nhất lên ảnh gốc
+        # result_image = cv2.drawContours(orig_img.copy(), [largest_contour], -1, (0, 255, 0), 2)
+        # cv2.imshow('Largest Contour', result_image)
+        # cv2.waitKey(0)
+        #
+        # x, y, w, h = cv2.boundingRect(largest_contour)
+        #
+        # # Vẽ hình chữ nhật lên ảnh gốc
+        # re_image = orig_img.copy()
+        # cv2.rectangle(re_image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        #
+        # # Hiển thị ảnh với các hình chữ nhật đã vẽ
+        # cv2.imshow('Rectangles around Contours', re_image)
+        # cv2.waitKey(0)
 
         # Detecting Edges through Contour approximation
         if len(page) == 0:
@@ -71,6 +98,14 @@ class imagePreprocessing:
         # For 4 corner points being detected.
         # Rearranging the order of the corner points.
         corners = order_points(corners)
+
+        image_with_corners = orig_img.copy()
+        for corner in corners:
+            cv2.circle(image_with_corners, tuple(corner), 5, (0, 255, 0), -1)
+
+        # Hiển thị ảnh với các điểm đã vẽ
+        cv2.imshow('Image with Corners', image_with_corners)
+        cv2.waitKey(0)
 
         # Finding Destination Co-ordinates
         w1 = np.sqrt((corners[0][0] - corners[1][0]) ** 2 + (corners[0][1] - corners[1][1]) ** 2)
@@ -94,5 +129,11 @@ class imagePreprocessing:
         un_warped = cv2.warpPerspective(orig_img, np.float32(homography), (w, h), flags=cv2.INTER_LINEAR)
         # Crop
         final = un_warped[:destination_corners[2][1], :destination_corners[2][0]]
+
+        if (final.shape[0] * final.shape[1]) < (orig_img.shape[0] * orig_img.shape[1] / 10):
+            final = orig_img
+
+        dir = 'D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\output\\'
+        cv2.imwrite(dir + f"edgedetection.png", final)
         return final
 
