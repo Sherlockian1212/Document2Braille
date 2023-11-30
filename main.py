@@ -42,7 +42,7 @@ def save_txt(text):
     print("Chuỗi đã được lưu vào file thành công.")
 
 if __name__ == '__main__':
-    path = 'D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\uploads\\test08.jpg'
+    path = 'D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\uploads\\test15.jpg'
     preProcess(path=path)
 
     # Đường dẫn đến thư mục chứa hình ảnh

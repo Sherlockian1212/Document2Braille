@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 from rembg import remove
+# import Kmean
 
 def order_points(pts):
     """Rearrange coordinates to order:
@@ -44,10 +45,6 @@ class imagePreprocessing:
         cv2.imshow('morphology', img)
         cv2.waitKey(0)
 
-        # output = remove(img)
-        # cv2.imshow('remove_background', output)
-        # cv2.waitKey(0)
-
         gray_image = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
         thresh = cv2.adaptiveThreshold(gray_image,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,17,2)
         cv2.imshow('thresh', thresh)
@@ -62,12 +59,12 @@ class imagePreprocessing:
         # Keeping only the largest detected contour.
         page = sorted(contours, key=cv2.contourArea, reverse=True)[:5]
 
-        cnt = sorted(contours, key=cv2.contourArea, reverse=True)
+        # cnt = sorted(contours, key=cv2.contourArea, reverse=True)
 
         # Chọn contour lớn nhất
         # largest_contour = cnt[0]
 
-        # # Vẽ contour lớn nhất lên ảnh gốc
+        # Vẽ contour lớn nhất lên ảnh gốc
         # result_image = cv2.drawContours(orig_img.copy(), [largest_contour], -1, (0, 255, 0), 2)
         # cv2.imshow('Largest Contour', result_image)
         # cv2.waitKey(0)
