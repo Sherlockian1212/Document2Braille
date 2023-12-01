@@ -23,14 +23,11 @@ def order_points(pts):
     # return the ordered coordinates
     return rect.astype('int').tolist()
 
-class Kmean:
+class K_means:
     def __init__(self, image):
         self.image = image
     def cluster(self):
         img = self.image
-
-        # Create a copy of resized original image for later use
-        orig_img = img.copy()
 
         # Resize image
         dim_limit = 1080
@@ -39,14 +36,16 @@ class Kmean:
             resize_scale = dim_limit / max_dim
             img = cv2.resize(img, None, fx=resize_scale, fy=resize_scale)
 
+        # Create a copy of resized original image for later use
         orig_img = img.copy()
+
         #dir = 'D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\resources\\K-means\\'
 
         # Repeated Closing operation
         kernel = np.ones((9, 9), np.uint8)
         morph = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel, iterations=3)
         #cv2.imwrite(dir + f"morph.png", morph)
-        # cv2.imshow('morphology', img)
+        # cv2.imshow('morphology', morph)
         # cv2.waitKey(0)
 
         (h,w,c) = morph.shape
@@ -132,6 +131,6 @@ class Kmean:
 
         return final
 
-# img = img.imread('D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\uploads\\test (29).jpg')
-# k = Kmean(img)
+# img = cv2.imread('D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\uploads\\test (29).jpg')
+# k = K_means(img)
 # k.cluster()

@@ -1,7 +1,5 @@
 import cv2
 import numpy as np
-from rembg import remove
-# import Kmean
 
 def order_points(pts):
     """Rearrange coordinates to order:
@@ -28,6 +26,7 @@ class imagePreprocessing:
 
     def imageProcessing(selt):
         img = selt.image
+
         # Resize image to workable size
         dim_limit = 1080
         max_dim = max(img.shape)
@@ -37,63 +36,54 @@ class imagePreprocessing:
 
         # Create a copy of resized original image for later use
         orig_img = img.copy()
-        # cv2.imshow("original_resized", orig_img)
+
+        dir = '/resources/EdgeDetection\\'
 
         # Repeated Closing operation to remove text from the document.
-        kernel = np.ones((5, 5), np.uint8)
-        img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel, iterations=3)
-        cv2.imshow('morphology', img)
-        cv2.waitKey(0)
+        kernel = np.ones((9, 9), np.uint8)
+        morph = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel, iterations=3)
+        # cv2.imwrite(dir + f"morph.png", morph)
+        # cv2.imshow('morphology', morph)
+        # cv2.waitKey(0)
 
-        gray_image = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+        # Binary thresholding
+        gray_image = cv2.cvtColor(morph, cv2.COLOR_RGB2GRAY)
         thresh = cv2.adaptiveThreshold(gray_image,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,17,2)
-        cv2.imshow('thresh', thresh)
-        cv2.waitKey(0)
+        # cv2.imwrite(dir + f"thresh.png", thresh)
+        # cv2.imshow('Threshold', thresh)
+        # cv2.waitKey(0)
 
+        # Canny
         canny = cv2.Canny(thresh, 0, 200)
         canny = cv2.dilate(canny, cv2.getStructuringElement(cv2.MORPH_RECT, (7, 7)))
-        cv2.imshow('canny', canny)
-        cv2.waitKey(0)
+        # cv2.imwrite(dir + f"canny.png", canny)
+        # cv2.imshow('canny', canny)
+        # cv2.waitKey(0)
+
         # Finding contours for the detected edges.
         contours, hierarchy = cv2.findContours(canny, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
         # Keeping only the largest detected contour.
-
         cnt = sorted(contours, key=cv2.contourArea, reverse=True)
         largest_contour = cnt[0]
         all_points = np.concatenate(largest_contour)
         hull = cv2.convexHull(all_points)
+        hull_img = orig_img.copy()
+        cv2.drawContours(hull_img, [hull], -1, (0, 255, 0), 2)
+        # cv2.imwrite(dir + f"hull_img.png", hull_img)
+        # cv2.imshow('hull', hull_img)
+        # cv2.waitKey(0)
 
-        re = orig_img.copy()
-        cv2.drawContours(re, [hull], -1, (0, 255, 0), 2)
-
-        cv2.imshow('hull', re)
-        cv2.waitKey(0)
-
-        page = sorted(contours, key=cv2.contourArea, reverse=True)[:5]
-
-        if len(page) == 0:
-            return orig_img
-        # loop over the contours
-        for c in page:
-            # approximate the contour
-            epsilon = 0.02 * cv2.arcLength(c, True)
-            corners = cv2.approxPolyDP(c, epsilon, True)
-            # if our approximated contour has four points
-            if len(corners) == 4:
-                break
-        # Sorting the corners and converting them to desired shape.
+        # approximate the contour
+        epsilon = 0.02 * cv2.arcLength(hull, True)
+        corners = cv2.approxPolyDP(hull, epsilon, True)
         corners = sorted(np.concatenate(corners).tolist())
-        # For 4 corner points being detected.
-        # Rearranging the order of the corner points.
         corners = order_points(corners)
-
-        image_with_corners = orig_img.copy()
+        corners_img = orig_img.copy()
         for corner in corners:
-            cv2.circle(image_with_corners, tuple(corner), 5, (0, 255, 0), -1)
-
-        # Hiển thị ảnh với các điểm đã vẽ
-        cv2.imshow('Image with Corners', image_with_corners)
-        cv2.waitKey(0)
+            cv2.circle(corners_img, tuple(corner), 15, (0, 255, 0), -1)
+        # cv2.imwrite(dir + f"corners_img.png", corners_img)
+        # cv2.imshow('corners_img', corners_img)
+        # cv2.waitKey(0)
 
         # Finding Destination Co-ordinates
         w1 = np.sqrt((corners[0][0] - corners[1][0]) ** 2 + (corners[0][1] - corners[1][1]) ** 2)
@@ -121,6 +111,11 @@ class imagePreprocessing:
         if (final.shape[0] * final.shape[1]) < (orig_img.shape[0] * orig_img.shape[1] / 10):
             final = orig_img
 
-        dir = 'D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\output\\'
-        cv2.imwrite(dir + f"edgedetection.png", final)
+        #dir = 'D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\output\\'
+        # cv2.imwrite(dir + f"final.png", final)
+
         return final
+
+# img = cv2.imread('D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\uploads\\test (29).jpg')
+# k = imagePreprocessing(img)
+# k.imageProcessing()
