@@ -36,8 +36,10 @@ class imagePreprocessing:
 
         # Create a copy of resized original image for later use
         orig_img = img.copy()
+        # cv2.imshow('orig_img', orig_img)
+        # cv2.waitKey(0)
 
-        dir = '/resources/EdgeDetection\\'
+        # dir = 'D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\resources\\EdgeDetection\\'
 
         # Repeated Closing operation to remove text from the document.
         kernel = np.ones((9, 9), np.uint8)
@@ -68,7 +70,7 @@ class imagePreprocessing:
         all_points = np.concatenate(largest_contour)
         hull = cv2.convexHull(all_points)
         hull_img = orig_img.copy()
-        cv2.drawContours(hull_img, [hull], -1, (0, 255, 0), 2)
+        cv2.drawContours(hull_img, [hull], -1, (0, 255, 0), 10)
         # cv2.imwrite(dir + f"hull_img.png", hull_img)
         # cv2.imshow('hull', hull_img)
         # cv2.waitKey(0)
@@ -80,7 +82,7 @@ class imagePreprocessing:
         corners = order_points(corners)
         corners_img = orig_img.copy()
         for corner in corners:
-            cv2.circle(corners_img, tuple(corner), 15, (0, 255, 0), -1)
+            cv2.circle(corners_img, tuple(corner), 20, (0, 255, 0), -1)
         # cv2.imwrite(dir + f"corners_img.png", corners_img)
         # cv2.imshow('corners_img', corners_img)
         # cv2.waitKey(0)
@@ -119,3 +121,14 @@ class imagePreprocessing:
 # img = cv2.imread('D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\uploads\\test (29).jpg')
 # k = imagePreprocessing(img)
 # k.imageProcessing()
+
+# import os
+#
+# input_directory = 'D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\uploads\\'
+# output_directory = 'D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\resources\\EdgeDetection_Result\\'
+# for filename in os.listdir(input_directory):
+#     input_path = os.path.join(input_directory, filename)
+#     img = cv2.imread(input_path)
+#     k = imagePreprocessing(img)
+#     final = k.imageProcessing()
+#     cv2.imwrite(output_directory + filename, final)

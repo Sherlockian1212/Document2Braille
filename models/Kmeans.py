@@ -8,7 +8,6 @@ def order_points(pts):
        top-left, top-right, bottom-right, bottom-left"""
     rect = np.zeros((4, 2), dtype='float32')
     pts = np.array(pts)
-    print(pts)
     s = pts.sum(axis=1)
     # Top-left point will have the smallest sum.
     rect[0] = pts[np.argmin(s)]
@@ -38,13 +37,15 @@ class K_means:
 
         # Create a copy of resized original image for later use
         orig_img = img.copy()
+        # cv2.imshow('orig_img', orig_img)
+        # cv2.waitKey(0)
 
-        #dir = 'D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\resources\\K-means\\'
+        # dir = 'D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\resources\\K-means\\'
 
         # Repeated Closing operation
         kernel = np.ones((9, 9), np.uint8)
         morph = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel, iterations=3)
-        #cv2.imwrite(dir + f"morph.png", morph)
+        # cv2.imwrite(dir + f"morph.png", morph)
         # cv2.imshow('morphology', morph)
         # cv2.waitKey(0)
 
@@ -84,8 +85,8 @@ class K_means:
         all_points = np.concatenate(largest_contour)
         hull = cv2.convexHull(all_points)
         hull_img = orig_img.copy()
-        cv2.drawContours(hull_img, [hull], -1, (0, 255, 0), 2)
-        #cv2.imwrite(dir + f"hull_img.png", hull_img)
+        cv2.drawContours(hull_img, [hull], -1, (0, 255, 0), 10)
+        # cv2.imwrite(dir + f"hull_img.png", hull_img)
         # cv2.imshow('hull_img', hull_img)
         # cv2.waitKey(0)
 
@@ -96,8 +97,8 @@ class K_means:
         corners = order_points(corners)
         corners_img = orig_img.copy()
         for corner in corners:
-            cv2.circle(corners_img, tuple(corner), 15, (0, 255, 0), -1)
-        #cv2.imwrite(dir + f"corners_img.png", corners_img)
+            cv2.circle(corners_img, tuple(corner), 20, (0, 255, 0), -1)
+        # cv2.imwrite(dir + f"corners_img.png", corners_img)
         # cv2.imshow('corners_img', corners_img)
         # cv2.waitKey(0)
 
@@ -126,11 +127,22 @@ class K_means:
         if (final.shape[0] * final.shape[1]) < (orig_img.shape[0] * orig_img.shape[1] / 10):
             final = orig_img
 
-        #dir = 'D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\output\\'
-        #cv2.imwrite(dir + f"final.png", final)
+        # dir = 'D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\resources\\K-means_Result'
+        # cv2.imwrite(dir + f"final.png", final)
 
         return final
 
 # img = cv2.imread('D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\uploads\\test (29).jpg')
 # k = K_means(img)
 # k.cluster()
+
+# import os
+#
+# input_directory = 'D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\uploads\\'
+# output_directory = 'D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\resources\\K-means_Result\\'
+# for filename in os.listdir(input_directory):
+#     input_path = os.path.join(input_directory, filename)
+#     img = cv2.imread(input_path)
+#     k = K_means(img)
+#     final = k.cluster()
+#     cv2.imwrite(output_directory + filename, final)

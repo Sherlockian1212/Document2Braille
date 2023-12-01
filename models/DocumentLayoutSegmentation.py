@@ -1,6 +1,5 @@
 import cv2
 
-img = cv2.imread("D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\output\\edgedetection.png")
 
 class DocumentLayoutSegmentation:
     def __init__(self, image):
@@ -20,19 +19,19 @@ class DocumentLayoutSegmentation:
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         blur = cv2.GaussianBlur(gray, (7,7), 0)
 
-        cv2.imshow("blur", blur)
-        cv2.waitKey(0)
+        # cv2.imshow("blur", blur)
+        # cv2.waitKey(0)
 
         thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
-        cv2.imshow("thresh", thresh)
-        cv2.waitKey(0)
+        # cv2.imshow("thresh", thresh)
+        # cv2.waitKey(0)
 
 
         # Create rectangular structuring element and dilate
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5,5))
         dilate = cv2.dilate(thresh, kernel, iterations=4)
-        cv2.imshow("dilate", thresh)
-        cv2.waitKey(0)
+        # cv2.imshow("dilate", thresh)
+        # cv2.waitKey(0)
 
         # Find contours and draw rectangle
         cnts = cv2.findContours(dilate, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
@@ -62,9 +61,10 @@ class DocumentLayoutSegmentation:
             x,y,w,h = cv2.boundingRect(c)
             cv2.rectangle(image, (x, y), (x + w, y + h), (36,255,12), 2)
 
-        cv2.imwrite(dir + f"segmentation.png", image)
-        cv2.imshow("segmentation", image)
-        cv2.waitKey(0)
+        # cv2.imwrite(dir + f"segmentation.png", image)
+        # cv2.imshow("segmentation", image)
+        # cv2.waitKey(0)
         return image
 
-result = DocumentLayoutSegmentation(img).segmentation()
+# img = cv2.imread("D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\output\\edgedetection.png")
+# result = DocumentLayoutSegmentation(img).segmentation()
