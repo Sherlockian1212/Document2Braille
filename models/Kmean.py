@@ -1,6 +1,5 @@
 import numpy as np
 import cv2
-import matplotlib.image as img
 from sklearn.cluster import KMeans
 from collections import Counter
 
@@ -9,6 +8,7 @@ def order_points(pts):
        top-left, top-right, bottom-right, bottom-left"""
     rect = np.zeros((4, 2), dtype='float32')
     pts = np.array(pts)
+    print(pts)
     s = pts.sum(axis=1)
     # Top-left point will have the smallest sum.
     rect[0] = pts[np.argmin(s)]
@@ -23,101 +23,84 @@ def order_points(pts):
     # return the ordered coordinates
     return rect.astype('int').tolist()
 
-img = img.imread('D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\uploads\\test19.jpg')
-
 class Kmean:
     def __init__(self, image):
         self.image = image
     def cluster(self):
         img = self.image
+
+        # Create a copy of resized original image for later use
+        orig_img = img.copy()
+
+        # Resize image
         dim_limit = 1080
         max_dim = max(img.shape)
         if max_dim > dim_limit:
             resize_scale = dim_limit / max_dim
             img = cv2.resize(img, None, fx=resize_scale, fy=resize_scale)
 
-        # Create a copy of resized original image for later use
         orig_img = img.copy()
-        # cv2.imshow("original_resized", orig_img)
+        #dir = 'D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\resources\\K-means\\'
 
-        # Repeated Closing operation to remove text from the document.
+        # Repeated Closing operation
         kernel = np.ones((9, 9), np.uint8)
-        img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel, iterations=3)
-        cv2.imshow('morphology', img)
-        cv2.waitKey(0)
+        morph = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel, iterations=3)
+        #cv2.imwrite(dir + f"morph.png", morph)
+        # cv2.imshow('morphology', img)
+        # cv2.waitKey(0)
 
-        (h,w,c) = img.shape
-        img2D = img.reshape(h*w,c)
+        (h,w,c) = morph.shape
+        img2D = morph.reshape(h*w,c)
 
         kmeans_model = KMeans(n_clusters=7)
         cluster_labels = kmeans_model.fit_predict(img2D)
 
-        print(kmeans_model.cluster_centers_)
         rgb_cols = kmeans_model.cluster_centers_.round(0).astype(int)
-
         labels_count = Counter(cluster_labels)
-        print(labels_count)
+        # print(labels_count)
+        # print(kmeans_model.cluster_centers_)
 
-        img_quant = np.reshape(rgb_cols[cluster_labels],(h,w,c)).astype(np.uint8)
-        print('done')
-        # cv2.imshow('cluster',img_quant)
+        clustered_img = np.reshape(rgb_cols[cluster_labels],(h,w,c)).astype(np.uint8)
+        #cv2.imwrite(dir + f"clustered_img.png", clustered_img)
+        # cv2.imshow('cluster',clustered_img)
         # cv2.waitKey(0)
 
         # Find the label of the largest cluster
         largest_cluster_label = max(labels_count, key=labels_count.get)
 
-        # Create a mask for the largest cluster
+        # Dilate the largest cluster
         largest_cluster_mask = (cluster_labels == largest_cluster_label).reshape(h, w)
         cluster_image = (largest_cluster_mask * 255).astype(np.uint8)
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
         dilate = cv2.dilate(cluster_image, kernel, iterations=4)
+        #cv2.imwrite(dir + f"dilate.png", dilate)
+        # cv2.imshow('dilate', dilate)
+        # cv2.waitKey(0)
 
+        # Find convex hull
         contours, hierarchy = cv2.findContours(dilate, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
-
         cnt = sorted(contours, key=cv2.contourArea, reverse=True)
         largest_contour = cnt[0]
-
-        result_image = cv2.drawContours(orig_img.copy(), [largest_contour], -1, (0, 255, 0), 2)
-
-        cv2.imshow('cluster_image',result_image)
-        cv2.waitKey(0)
-
+        largest_cluster = cv2.drawContours(morph.copy(), [largest_contour], -1, (0, 255, 0), 2)
         all_points = np.concatenate(largest_contour)
         hull = cv2.convexHull(all_points)
+        hull_img = orig_img.copy()
+        cv2.drawContours(hull_img, [hull], -1, (0, 255, 0), 2)
+        #cv2.imwrite(dir + f"hull_img.png", hull_img)
+        # cv2.imshow('hull_img', hull_img)
+        # cv2.waitKey(0)
 
-        re = orig_img.copy()
-        cv2.drawContours(re, [hull], -1, (0, 255, 0), 2)
-
-        cv2.imshow('hull', re)
-        cv2.waitKey(0)
-
-        x, y, w, h = cv2.boundingRect(hull)
-
-        # Cắt ảnh theo hình chữ nhật
-        cropped_img = orig_img[y:y + h, x:x + w]
-
-        # dir = 'D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\output\\'
-        # cv2.imwrite(dir + f"k-mean.png", cropped_img)
-
+        # approximate the contour
         epsilon = 0.02 * cv2.arcLength(hull, True)
         corners = cv2.approxPolyDP(hull, epsilon, True)
-        # if our approximated contour has four points
-        # if len(corners) == 4:
-        #     break
-        # Sorting the corners and converting them to desired shape.
-
         corners = sorted(np.concatenate(corners).tolist())
-        # For 4 corner points being detected.
-        # Rearranging the order of the corner points.
         corners = order_points(corners)
-
-        image_with_corners = orig_img.copy()
+        corners_img = orig_img.copy()
         for corner in corners:
-            cv2.circle(image_with_corners, tuple(corner), 5, (0, 255, 0), -1)
-
-        # Hiển thị ảnh với các điểm đã vẽ
-        cv2.imshow('Image with Corners', image_with_corners)
-        cv2.waitKey(0)
+            cv2.circle(corners_img, tuple(corner), 15, (0, 255, 0), -1)
+        #cv2.imwrite(dir + f"corners_img.png", corners_img)
+        # cv2.imshow('corners_img', corners_img)
+        # cv2.waitKey(0)
 
         # Finding Destination Co-ordinates
         w1 = np.sqrt((corners[0][0] - corners[1][0]) ** 2 + (corners[0][1] - corners[1][1]) ** 2)
@@ -132,7 +115,6 @@ class Kmean:
 
         # Final destination co-ordinates.
         destination_corners = order_points(np.array([[0, 0], [w - 1, 0], [0, h - 1], [w - 1, h - 1]]))
-
         h, w = orig_img.shape[:2]
         # Getting the homography.
         homography, mask = cv2.findHomography(np.float32(corners), np.float32(destination_corners), method=cv2.RANSAC,
@@ -145,8 +127,11 @@ class Kmean:
         if (final.shape[0] * final.shape[1]) < (orig_img.shape[0] * orig_img.shape[1] / 10):
             final = orig_img
 
-        dir = 'D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\output\\'
-        cv2.imwrite(dir + f"edgedetection.png", final)
+        #dir = 'D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\output\\'
+        #cv2.imwrite(dir + f"final.png", final)
 
-k = Kmean(img)
-k.cluster()
+        return final
+
+# img = img.imread('D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\uploads\\test (29).jpg')
+# k = Kmean(img)
+# k.cluster()

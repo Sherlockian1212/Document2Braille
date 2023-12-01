@@ -57,29 +57,20 @@ class imagePreprocessing:
         # Finding contours for the detected edges.
         contours, hierarchy = cv2.findContours(canny, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
         # Keeping only the largest detected contour.
+
+        cnt = sorted(contours, key=cv2.contourArea, reverse=True)
+        largest_contour = cnt[0]
+        all_points = np.concatenate(largest_contour)
+        hull = cv2.convexHull(all_points)
+
+        re = orig_img.copy()
+        cv2.drawContours(re, [hull], -1, (0, 255, 0), 2)
+
+        cv2.imshow('hull', re)
+        cv2.waitKey(0)
+
         page = sorted(contours, key=cv2.contourArea, reverse=True)[:5]
 
-        # cnt = sorted(contours, key=cv2.contourArea, reverse=True)
-
-        # Chọn contour lớn nhất
-        # largest_contour = cnt[0]
-
-        # Vẽ contour lớn nhất lên ảnh gốc
-        # result_image = cv2.drawContours(orig_img.copy(), [largest_contour], -1, (0, 255, 0), 2)
-        # cv2.imshow('Largest Contour', result_image)
-        # cv2.waitKey(0)
-        #
-        # x, y, w, h = cv2.boundingRect(largest_contour)
-        #
-        # # Vẽ hình chữ nhật lên ảnh gốc
-        # re_image = orig_img.copy()
-        # cv2.rectangle(re_image, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        #
-        # # Hiển thị ảnh với các hình chữ nhật đã vẽ
-        # cv2.imshow('Rectangles around Contours', re_image)
-        # cv2.waitKey(0)
-
-        # Detecting Edges through Contour approximation
         if len(page) == 0:
             return orig_img
         # loop over the contours

@@ -16,7 +16,7 @@ def extractText(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     # Xử lý ảnh (tuỳ chọn)
-    gray = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+    threshold = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
 
     # Ghi tạm ảnh xuống ổ cứng để sau đó apply OCR
     temp_filename = "temp.png"
