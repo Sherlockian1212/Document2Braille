@@ -133,4 +133,3 @@ class imagePreprocessing:
         dir = 'D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\output\\'
         cv2.imwrite(dir + f"edgedetection.png", final)
         return final
-

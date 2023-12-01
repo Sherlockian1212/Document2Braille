@@ -23,7 +23,7 @@ def order_points(pts):
     # return the ordered coordinates
     return rect.astype('int').tolist()
 
-img = img.imread('D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\uploads\\test16.jpg')
+img = img.imread('D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\uploads\\test19.jpg')
 
 class Kmean:
     def __init__(self, image):
@@ -41,13 +41,15 @@ class Kmean:
         # cv2.imshow("original_resized", orig_img)
 
         # Repeated Closing operation to remove text from the document.
-        kernel = np.ones((7, 7), np.uint8)
+        kernel = np.ones((9, 9), np.uint8)
         img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel, iterations=3)
+        cv2.imshow('morphology', img)
+        cv2.waitKey(0)
 
         (h,w,c) = img.shape
         img2D = img.reshape(h*w,c)
 
-        kmeans_model = KMeans(n_clusters=6)
+        kmeans_model = KMeans(n_clusters=7)
         cluster_labels = kmeans_model.fit_predict(img2D)
 
         print(kmeans_model.cluster_centers_)
@@ -58,8 +60,8 @@ class Kmean:
 
         img_quant = np.reshape(rgb_cols[cluster_labels],(h,w,c)).astype(np.uint8)
         print('done')
-        cv2.imshow('cluster',img_quant)
-        cv2.waitKey(0)
+        # cv2.imshow('cluster',img_quant)
+        # cv2.waitKey(0)
 
         # Find the label of the largest cluster
         largest_cluster_label = max(labels_count, key=labels_count.get)
@@ -85,15 +87,66 @@ class Kmean:
 
         re = orig_img.copy()
         cv2.drawContours(re, [hull], -1, (0, 255, 0), 2)
+
         cv2.imshow('hull', re)
         cv2.waitKey(0)
 
-        dir = 'D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\output\\'
-        cv2.imwrite(dir + f"k-mean.png", re)
+        x, y, w, h = cv2.boundingRect(hull)
 
-        # img_quant = img_quant.astype(np.uint8)
-        # cv2.imshow('result', img_quant)
-        # cv2.waitKey(0)
+        # Cắt ảnh theo hình chữ nhật
+        cropped_img = orig_img[y:y + h, x:x + w]
+
+        # dir = 'D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\output\\'
+        # cv2.imwrite(dir + f"k-mean.png", cropped_img)
+
+        epsilon = 0.02 * cv2.arcLength(hull, True)
+        corners = cv2.approxPolyDP(hull, epsilon, True)
+        # if our approximated contour has four points
+        # if len(corners) == 4:
+        #     break
+        # Sorting the corners and converting them to desired shape.
+
+        corners = sorted(np.concatenate(corners).tolist())
+        # For 4 corner points being detected.
+        # Rearranging the order of the corner points.
+        corners = order_points(corners)
+
+        image_with_corners = orig_img.copy()
+        for corner in corners:
+            cv2.circle(image_with_corners, tuple(corner), 5, (0, 255, 0), -1)
+
+        # Hiển thị ảnh với các điểm đã vẽ
+        cv2.imshow('Image with Corners', image_with_corners)
+        cv2.waitKey(0)
+
+        # Finding Destination Co-ordinates
+        w1 = np.sqrt((corners[0][0] - corners[1][0]) ** 2 + (corners[0][1] - corners[1][1]) ** 2)
+        w2 = np.sqrt((corners[2][0] - corners[3][0]) ** 2 + (corners[2][1] - corners[3][1]) ** 2)
+        # Finding the maximum width.
+        w = max(int(w1), int(w2))
+
+        h1 = np.sqrt((corners[0][0] - corners[2][0]) ** 2 + (corners[0][1] - corners[2][1]) ** 2)
+        h2 = np.sqrt((corners[1][0] - corners[3][0]) ** 2 + (corners[1][1] - corners[3][1]) ** 2)
+        # Finding the maximum height.
+        h = max(int(h1), int(h2))
+
+        # Final destination co-ordinates.
+        destination_corners = order_points(np.array([[0, 0], [w - 1, 0], [0, h - 1], [w - 1, h - 1]]))
+
+        h, w = orig_img.shape[:2]
+        # Getting the homography.
+        homography, mask = cv2.findHomography(np.float32(corners), np.float32(destination_corners), method=cv2.RANSAC,
+                                              ransacReprojThreshold=3.0)
+        # Perspective transform using homography.
+        un_warped = cv2.warpPerspective(orig_img, np.float32(homography), (w, h), flags=cv2.INTER_LINEAR)
+        # Crop
+        final = un_warped[:destination_corners[2][1], :destination_corners[2][0]]
+
+        if (final.shape[0] * final.shape[1]) < (orig_img.shape[0] * orig_img.shape[1] / 10):
+            final = orig_img
+
+        dir = 'D:\\STUDY\\DHSP\\Year3\\HK1\\DigitalImageProcessing-ThayVietDzeThuong\\Final-Project\\Document2Braille\\output\\'
+        cv2.imwrite(dir + f"edgedetection.png", final)
 
 k = Kmean(img)
 k.cluster()
