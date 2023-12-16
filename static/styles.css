@@ -1,0 +1,33 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+#container {
+    display: flex;
+    width: 80%;
+    border: 1px solid #ccc;
+}
+
+#left-side {
+    flex: 1;
+    padding: 20px;
+    background: #f0f0f0;
+    text-align: center;
+}
+
+#right-side {
+    flex: 1;
+    padding: 20px;
+}
+
+#result {
+    white-space: pre-line;
+}
+
+#file-input {
+    margin-bottom: 20px;
+}

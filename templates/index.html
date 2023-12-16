@@ -1,0 +1,250 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YH Website</title>
+    <!-- Font Awesome Icons -->
+
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <!-- Smooth Scroll Library -->
+    <script defer src="https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.polyfills.min.js"></script>
+
+    <style>
+        /* Custom styles */
+        body {
+            padding-top: 56px;
+            background-color: #f4f4f4; /* Set your preferred background color */
+            color: #333; /* Set your preferred text color */
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height:60px;
+            z-index: 1000;
+            background-color: #333; /* Set your preferred navbar background color */
+        }
+        .navbar-brand {
+            display: inline-block;
+            width: 100px; /* Điều chỉnh kích thước của logo theo ý bạn */
+            height: 80px; /* Điều chỉnh kích thước của logo theo ý bạn */
+            background-image: url('/static/images/logo.gif'); /* Đặt đường dẫn đến hình ảnh của bạn */
+            background-size:cover;
+        }
+        .navbar-brand,
+        .navbar-nav .nav-link {
+            color: #fff !important; /* Set your preferred text color for navbar items */
+        }
+
+        .navbar-toggler-icon {
+            background-color: #fff; /* Set your preferred color for the navbar toggler icon */
+        }
+
+        .section {
+            padding: 30px 0px; /* Adjust the padding as needed */
+        }
+
+        .section {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+        }
+
+        .fixed-background {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-content {
+            z-index: 2;
+            position: relative;
+        }
+
+        .section-content h1,
+        .section-content p,
+        .section-content a {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Hiệu ứng shadow */
+            font-weight: bold; /* Tăng độ đậm */
+        }
+
+        .img-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        .btn-custom {
+            background-color: #343a40; /* Màu xanh đen */
+            color: #ffffff; /* Màu trắng */
+            border: 2px solid #ffffff; /* Viền trắng */
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .btn-custom:hover {
+            background-color: #ffffff; /* Hover màu trắng */
+            color: #343a40; /* Hover màu xanh đen */
+            border: 2px solid #343a40; /* Hover viền xanh đen */
+        }
+        .about-container {
+            display: flex;
+        }
+
+        .about-image {
+            flex: 1; /* Take up 1/2 of the container */
+            overflow: hidden; /* Ẩn phần ảnh nếu nó vượt ra khỏi kích thước container */
+        }
+
+        .about-image img {
+            width: 100%; /* Make the image fill its container */
+            height: auto; /* Đảm bảo tỷ lệ khung hình tự động */
+            border-radius: 8px; /* Rounded corners */
+        }
+
+        .about-text {
+            flex: 1; /* Take up 1/2 of the container */
+            padding-left: 40px; /* Add more space between image and text */
+            padding-right: 10px; /* Add padding to the right */
+            display: flex; /* Hiển thị dạng flex container */
+            align-items: center; /* Canh giữa theo chiều ngang */
+        }
+
+        span {
+            color: #333; /* Màu sắc chữ đậm hơn */
+            font-size: 1em; /* Tăng kích thước chữ */
+            font-weight: bold; /* Chữ đậm */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* Đổ bóng chữ */
+            margin-bottom: 10px; /* Khoảng cách giữa các dòng */}
+
+        /* Thêm hiệu ứng hover cho ảnh */
+        .about-image:hover img {
+            transform: scale(1.1); /* Phóng to hình khi di chuột qua */
+            transition: transform 0.3s ease; /* Hiệu ứng chuyển động mềm mại */
+        }
+        .overlay-gif {
+            position: absolute;
+            top: 0;
+            right: 0;
+            transform: translate(345%, -230%);
+        }
+        html {
+            overflow-x: hidden;
+            overflow-y: scroll; /* Đảm bảo chỉ có thanh cuộn dọc */
+            scroll-behavior: smooth;
+        }
+        #footer {
+            margin-top: 50px; /* Khoảng cách giữa phần cuối cùng và footer */
+        }
+
+        footer {
+            padding: 20px 0;
+            background-color: #333; /* Màu nền footer */
+        }
+
+        footer p {
+            margin-bottom: 10px;
+        }
+
+
+
+
+
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#"></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#home">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#about">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#contact">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Home Section -->
+    <div id="home" class="section fixed-background">
+        <img src="{{ url_for('static', filename='images/bg2.jpg') }}" class="img-fluid w-100 h-100 img-overlay" style="object-fit: cover;" alt="Responsive image">
+        <div class="section-content">
+            <!-- ... your existing home section code ... -->
+            <h1>Convert to Braille</h1>
+            <p>
+                Welcome to our text-to-braille conversion website!
+            </p>
+            <a href="{{ url_for('user') }}" class="btn btn-custom btn-lg">Experience now</a>
+        </div>
+    </div>
+
+    <!-- About Section -->
+    <div id="about" class="section">
+        <div class="about-container">
+            <!-- Image on the left -->
+            <div class="about-image">
+                <img src="{{ url_for('static', filename='images/bg1.jpg') }}" alt="About Image">
+            </div>
+            <!-- Text on the right -->
+            <div class="about-text">
+                <span>Discover the world of Braille with us! Dive into its history, from Louis Braille's invention to its impact today. Our platform not only translates text but also offers customizable styles, educational resources, and a community hub. Join us in celebrating Braille's evolution and making information universally accessible. Start your Braille journey today!<span>
+                <!-- ... your existing about section code ... -->
+            </div>
+        </div>
+    </div>
+<!-- Footer Section -->
+<div id="footer" >
+    <footer class="py-4 bg-dark text-white">
+        <div class="container text-center">
+            <p>&copy; 2023 YHBRAILLE website. All rights reserved</p>
+            <p>Contact us: yhbraille.email@example.com</p>
+
+        </div>
+    </footer>
+</div>
+
+
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <!-- Smooth Scroll Initialization -->
+    <!-- Font Awesome Icons -->
+    <script>
+    var scroll = new SmoothScroll('a[href*="#"]', {
+        speed: 800,
+        speedAsDuration: true,
+        easing: 'easeInOutQuad'  // Thay đổi thành một hàm easing khác, ví dụ: easeInOutQuad, easeInOutExpo, ...
+    });
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Input and Output</title>
+    <style>
+        body {
+        background-color: #f0f0f0; /* Màu nền của trang */
+        font-family: 'Arial', sans-serif; /* Kiểu font chữ */
+        color: #333; /* Màu chữ chính */
+        margin: 0; /* Loại bỏ margin mặc định */
+    }
+
+    #container {
+        display: flex;
+        justify-content: space-around;
+        height: 100vh;
+    }
+
+    #input-side, #output-side {
+        flex: 1;
+        width: 50%; /* Chia đều khoảng trống cho cả hai phần */
+        padding: 20px;
+        background: #343a40; /* Màu nền các phần Input và Output */
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Đổ bóng */
+    }
+
+    h2 {
+        color: #fff; /* Màu chữ cho tiêu đề */
+    }
+
+    textarea {
+        width: 90%;
+        height: 300px;
+        margin-bottom: 15px;
+        padding: 10px;
+        border: 1px solid #ddd; /* Viền */
+        border-radius: 5px; /* Bo tròn góc */
+    }
+
+    button {
+        padding: 10px 20px;
+        background-color: #28a745; /* Màu nền nút */
+        color: #fff; /* Màu chữ nút */
+        border: none;
+        border-radius: 5px; /* Bo tròn góc */
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #218838; /* Màu nền nút khi hover */
+    }
+
+    #output {
+        white-space: pre-line;
+        color: #fff; /* Màu chữ cho kết quả Output */
+    }
+
+    #download-pdf-btn {
+        margin-top: 15px;
+    }
+/* Navbar styles */
+.navbar {
+    background-image: url('/static/images/bg3.jpg');
+    padding: 10px; /* Khoảng cách nội dung trong thanh navbar */
+}
+
+/* Navbar brand (link) styles */
+.navbar-brand {
+    font-size: 20px; /* Kích thước chữ */
+    color: #28a745; /* Màu chữ xanh lá cây */
+    text-decoration: none; /* Bỏ gạch chân dưới liên kết */
+    font-weight: bold; /* Chữ đậm */
+    transition: color 0.3s; /* Hiệu ứng chuyển động màu chữ khi hover */
+}
+
+/* Hover effect for the navbar brand */
+.navbar-brand:hover {
+    color: #dc3545; /* Màu chữ đỏ khi hover */
+}
+
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-dark">
+        <a class="navbar-brand" href="{{ url_for('index') }}">Back to Home</a>
+    </nav>
+    <div method="POST" id="container">
+        <div id="input-side">
+            <h2>Input Text</h2>
+            <textarea id="input-text"></textarea>
+            <button onclick="processText()" id="confirm-btn">Confirm</button>
+        </div>
+        <div id="output-side">
+            <h2>Output Text</h2>
+            <div id="output"></div>
+            <button onclick="downloadPDF()" id="download-pdf-btn">Download as PDF</button>
+
+        </div>
+    </div>
+
+    <script src="https://rawgit.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
+
+    <script>
+         function processText() {
+            var inputText = document.getElementById('input-text').value;
+            fetch('/user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: inputText }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('output').innerText = data.braille_result;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+        function downloadPDF() {
+    var outputElement = document.getElementById('output');
+
+    html2pdf(outputElement, {
+        margin: 10,
+        filename: 'output.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+    });
+}
+
+    </script>
+
+</body>
+</html>
