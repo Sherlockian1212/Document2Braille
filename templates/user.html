@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text Input and Output</title>
-    <style>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Text Input and Output</title>
+        <style>
         body {
         background-color: #f0f0f0; /* Màu nền của trang */
         font-family: 'Arial', sans-serif; /* Kiểu font chữ */
@@ -80,31 +80,49 @@
 .navbar-brand:hover {
     color: #dc3545; /* Màu chữ đỏ khi hover */
 }
+input[type="file"] {
+    width: 90%;
+    height: 150px; /* Điều chỉnh chiều cao nếu cần */
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+
 
     </style>
-</head>
-<body>
-    <nav class="navbar navbar-dark bg-dark">
-        <a class="navbar-brand" href="{{ url_for('index') }}">Back to Home</a>
-    </nav>
-    <div method="POST" id="container">
-        <div id="input-side">
-            <h2>Input Text</h2>
-            <textarea id="input-text"></textarea>
-            <button onclick="processText()" id="confirm-btn">Confirm</button>
+    </head>
+    <body>
+        <nav class="navbar navbar-dark bg-dark">
+            <a class="navbar-brand" href="{{ url_for('index') }}">Back to Home</a>
+        </nav>
+        <div method="POST" id="container">
+            <div id="input-side">
+                <h2>Input Text</h2>
+                <textarea id="input-text"></textarea>
+                <button onclick="processText()" id="confirm-btn">Confirm</button>
+                <h2>______________</h2>
+                <h2>Upload An Image</h2>
+                <input type="file" id="imageUpload" name="imageUpload"
+                    accept="image/*" onchange="uploadImage(this)">
+                <button onclick="processImage()" id="confirm-btn">Confirm</button>
+            </div>
+            <div id="output-side">
+                <h2>Output Text</h2>
+                <div id="output"></div>
+                <button onclick="downloadPDF()" id="download-pdf-btn">Download
+                    as PDF</button>
+
+            </div>
         </div>
-        <div id="output-side">
-            <h2>Output Text</h2>
-            <div id="output"></div>
-            <button onclick="downloadPDF()" id="download-pdf-btn">Download as PDF</button>
 
-        </div>
-    </div>
+        <script
+            src="https://rawgit.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
 
-    <script src="https://rawgit.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
-
-    <script>
-         function processText() {
+        <script>
+        function processText() {
             var inputText = document.getElementById('input-text').value;
             fetch('/user', {
                 method: 'POST',
@@ -122,19 +140,54 @@
             });
         }
         function downloadPDF() {
-    var outputElement = document.getElementById('output');
+            var outputElement = document.getElementById('output');
 
-    html2pdf(outputElement, {
-        margin: 10,
-        filename: 'output.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-    });
-}
+            html2pdf(outputElement, {
+                margin: 10,
+                filename: 'output.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+            });
+        }
+
+        function uploadImage(input){
+            var fileInput = input;
+            var file = fileInput.files[0];
+            if (file) {
+                // Tạo formData để đính kèm hình ảnh
+                var formData = new FormData();
+                formData.append('image', file);
+
+                // Gửi POST request tới API
+                fetch('http://127.0.0.1:5000/api/upload', {  
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Xử lý phản hồi từ API ở đây
+                        message.textContent = data.message;
+                        if (data.message === 'Image uploaded successfully') {
+                            console.log('Hình ảnh đã được tải lên thành công!');
+                            var inputText = document.getElementById('input-text').value;
+                            inputText = '';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('API request failed:', error);
+                    });
+            } else {
+                message.textContent = 'Vui lòng chọn một hình ảnh.';
+            }
+        }
+
+        function processImage(){
+
+        }
 
     </script>
 
-</body>
+    </body>
 </html>
