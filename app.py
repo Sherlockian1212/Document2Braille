@@ -1,7 +1,7 @@
 # app.py
 
 from flask import Flask, render_template, request, jsonify
-from models.Process import process
+from models.Process import Process
 from models.Text2Braille import Text2Braille
 import os
 
@@ -33,14 +33,11 @@ def upload_image():
         upload_folder = 'uploads'
         os.makedirs(upload_folder, exist_ok=True)
         image.save(os.path.join(upload_folder, 'temp.png'))
-        return jsonify({'message': 'Image uploaded successfully'})
 
-@app.route('/api/process', methods=['GET'])
-def process_image():
-    currpath = current_directory = os.getcwd()
-    path = os.path.join(current_directory, "uploads\\temp.jpg")
-    braille_result = process(path)
-    return jsonify({'braille_result': braille_result})
+        current_directory = os.getcwd()
+        path = os.path.join(current_directory, "uploads","temp.png")
+        result = Process(path).process()
+        return jsonify({'result': result})
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -2,6 +2,9 @@ import numpy as np
 import cv2
 from sklearn.cluster import KMeans
 from collections import Counter
+import os
+
+os.environ["LOKY_MAX_CPU_COUNT"] = "4"  
 
 def order_points(pts):
     """Rearrange coordinates to order:
@@ -52,7 +55,7 @@ class K_means_cluster:
         (h,w,c) = morph.shape
         img2D = morph.reshape(h*w,c)
 
-        kmeans_model = KMeans(n_clusters=7)
+        kmeans_model = KMeans(n_clusters=7, n_init=10)
         cluster_labels = kmeans_model.fit_predict(img2D)
 
         rgb_cols = kmeans_model.cluster_centers_.round(0).astype(int)

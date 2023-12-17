@@ -6,92 +6,93 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Text Input and Output</title>
         <style>
-        body {
-        background-color: #f0f0f0; /* Màu nền của trang */
-        font-family: 'Arial', sans-serif; /* Kiểu font chữ */
-        color: #333; /* Màu chữ chính */
-        margin: 0; /* Loại bỏ margin mặc định */
-    }
+            body {
+                background-color: #f0f0f0; /* Màu nền của trang */
+                font-family: 'Arial', sans-serif; /* Kiểu font chữ */
+                color: #333; /* Màu chữ chính */
+                margin: 0; /* Loại bỏ margin mặc định */
+            }
 
-    #container {
-        display: flex;
-        justify-content: space-around;
-        height: 100vh;
-    }
+            #container {
+                display: flex;
+                justify-content: space-around;
+                height: 100vh;
+            }
 
-    #input-side, #output-side {
-        flex: 1;
-        width: 50%; /* Chia đều khoảng trống cho cả hai phần */
-        padding: 20px;
-        background: #343a40; /* Màu nền các phần Input và Output */
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Đổ bóng */
-    }
+            #input-side, #output-side {
+                flex: 1;
+                width: 50%; /* Chia đều khoảng trống cho cả hai phần */
+                padding: 20px;
+                background: #343a40; /* Màu nền các phần Input và Output */
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Đổ bóng */
+            }
 
-    h2 {
-        color: #fff; /* Màu chữ cho tiêu đề */
-    }
+            h2 {
+                color: #fff; /* Màu chữ cho tiêu đề */
+            }
 
-    textarea {
-        width: 90%;
-        height: 300px;
-        margin-bottom: 15px;
-        padding: 10px;
-        border: 1px solid #ddd; /* Viền */
-        border-radius: 5px; /* Bo tròn góc */
-    }
+            textarea {
+                width: 90%;
+                height: 300px;
+                margin-bottom: 15px;
+                padding: 10px;
+                border: 1px solid #ddd; /* Viền */
+                border-radius: 5px; /* Bo tròn góc */
+                font-size: 24px;
+            }
 
-    button {
-        padding: 10px 20px;
-        background-color: #28a745; /* Màu nền nút */
-        color: #fff; /* Màu chữ nút */
-        border: none;
-        border-radius: 5px; /* Bo tròn góc */
-        cursor: pointer;
-    }
+            button {
+                padding: 10px 20px;
+                background-color: #28a745; /* Màu nền nút */
+                color: #fff; /* Màu chữ nút */
+                border: none;
+                border-radius: 5px; /* Bo tròn góc */
+                cursor: pointer;
+                font-size: 20px;
+            }
 
-    button:hover {
-        background-color: #218838; /* Màu nền nút khi hover */
-    }
+            button:hover {
+                background-color: #218838; /* Màu nền nút khi hover */
+            }
 
-    #output {
-        white-space: pre-line;
-        color: #fff; /* Màu chữ cho kết quả Output */
-    }
+            #output {
+                white-space: pre-line;
+                color: #fff; /* Màu chữ cho kết quả Output */
+            }
 
-    #download-pdf-btn {
-        margin-top: 15px;
-    }
-/* Navbar styles */
-.navbar {
-    background-image: url('/static/images/bg3.jpg');
-    padding: 10px; /* Khoảng cách nội dung trong thanh navbar */
-}
+            #download-pdf-btn {
+                margin-top: 15px;
+            }
+            /* Navbar styles */
+            .navbar {
+                background-image: url('/static/images/bg3.jpg');
+                padding: 10px; /* Khoảng cách nội dung trong thanh navbar */
+            }
 
-/* Navbar brand (link) styles */
-.navbar-brand {
-    font-size: 20px; /* Kích thước chữ */
-    color: #28a745; /* Màu chữ xanh lá cây */
-    text-decoration: none; /* Bỏ gạch chân dưới liên kết */
-    font-weight: bold; /* Chữ đậm */
-    transition: color 0.3s; /* Hiệu ứng chuyển động màu chữ khi hover */
-}
+            /* Navbar brand (link) styles */
+            .navbar-brand {
+                font-size: 20px; /* Kích thước chữ */
+                color: #28a745; /* Màu chữ xanh lá cây */
+                text-decoration: none; /* Bỏ gạch chân dưới liên kết */
+                font-weight: bold; /* Chữ đậm */
+                transition: color 0.3s; /* Hiệu ứng chuyển động màu chữ khi hover */
+            }
 
-/* Hover effect for the navbar brand */
-.navbar-brand:hover {
-    color: #dc3545; /* Màu chữ đỏ khi hover */
-}
-input[type="file"] {
-    width: 90%;
-    height: 150px; /* Điều chỉnh chiều cao nếu cần */
-    margin-bottom: 15px;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: #fff;
-}
+            /* Hover effect for the navbar brand */
+            .navbar-brand:hover {
+                color: #dc3545; /* Màu chữ đỏ khi hover */
+            }
 
-
-
+            input[type="file"] {
+                width: 90%;
+                height: 30px; /* Điều chỉnh chiều cao nếu cần */
+                margin-bottom: 15px;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                background-color: #fff;
+                font-size: 24px;
+            }
     </style>
     </head>
     <body>
@@ -102,12 +103,11 @@ input[type="file"] {
             <div id="input-side">
                 <h2>Input Text</h2>
                 <textarea id="input-text"></textarea>
-                <button onclick="processText()" id="confirm-btn">Confirm</button>
                 <h2>______________</h2>
                 <h2>Upload An Image</h2>
                 <input type="file" id="imageUpload" name="imageUpload"
                     accept="image/*" onchange="uploadImage(this)">
-                <button onclick="processImage()" id="confirm-btn">Confirm</button>
+                <button onclick="processText()" id="confirm-btn">Confirm</button>
             </div>
             <div id="output-side">
                 <h2>Output Text</h2>
@@ -141,8 +141,9 @@ input[type="file"] {
         }
         function downloadPDF() {
             var outputElement = document.getElementById('output');
-
-            html2pdf(outputElement, {
+            // var wrapperDiv = document.createElement('div');
+            // wrapperDiv.innerHTML = outputElement.innerText;
+            html2pdf(outputElement.innerText, {
                 margin: 10,
                 filename: 'output.pdf',
                 image: { type: 'jpeg', quality: 0.98 },
@@ -167,12 +168,13 @@ input[type="file"] {
                 })
                     .then(response => response.json())
                     .then(data => {
-                        // Xử lý phản hồi từ API ở đây
-                        message.textContent = data.message;
-                        if (data.message === 'Image uploaded successfully') {
-                            console.log('Hình ảnh đã được tải lên thành công!');
-                            var inputText = document.getElementById('input-text').value;
-                            inputText = '';
+                        if (data.error) {
+                            // Handle error response
+                            message.textContent = data.error;
+                        } else {
+                            // Update inputText.value with the correct key from the response
+                            var inputText = document.getElementById('input-text');
+                            inputText.value = data.result;  // Assuming 'result' is the correct key in your response
                         }
                     })
                     .catch(error => {
@@ -181,10 +183,6 @@ input[type="file"] {
             } else {
                 message.textContent = 'Vui lòng chọn một hình ảnh.';
             }
-        }
-
-        function processImage(){
-
         }
 
     </script>
