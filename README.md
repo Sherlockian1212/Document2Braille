@@ -99,9 +99,9 @@ to discuss what you would like to change.
 Please make sure to update tests as appropriate.
 
 ## References
-[1] Ngo Quoc Viet (2017). Xử lý ảnh số. NXB ĐHSP Tp.HCM.
+[1] Ngô Quốc Việt. (2017). Xử lý ảnh số. NXB ĐHSP Tp.HCM.
 
-[2] Ngo Quoc Viet. Digital Image Processing lecture slides. (Bài giảng của thầy Việt dễ thương)
+[2] Ngô Quốc Việt. Digital Image Processing lecture slides. (Bài giảng của thầy Việt dễ thương)
 
 [3] Phan Đức Chính, Tôn Thân, Vũ Hữu Bình, Trần Phương Dung, Ngô Hữu Dũng, Lê Văn Hồng, Nguyễn Hữu Thảo. Sách giáo khoa Toán lớp 9 Tập 1. Nhà xuất bản Giáo Dục Việt Nam.
 
